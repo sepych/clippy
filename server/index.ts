@@ -3,6 +3,7 @@ import * as path from "node:path";
 import clipboard from 'clipboardy';
 import {v4 as uuidv4} from 'uuid';
 import {MasterServerConnection} from "./masterServerConnection.ts";
+import {ApiServer} from "../common/api.ts";
 
 const app = express();
 
@@ -25,6 +26,8 @@ const args = process.argv.slice(2);
 const channel = args[0] || uuidv4();
 
 
+const apiServer = new ApiServer();
+
 const server = Bun.serve<WebSocketData>({
     async fetch(req, server) {
         server.upgrade(req, {
@@ -40,8 +43,11 @@ const server = Bun.serve<WebSocketData>({
         open(ws) {
             console.log("new channel opened", ws.data);
             ws.subscribe(channel);
-            const data = masterServerConnection.getInitialData();
-            server.publish(channel, data);
+            server.publish(channel, apiServer.getChannelPacket(channel));
+
+            // const data = masterServerConnection.getInitialData();
+            const data = masterServerConnection.getInitialMessages();
+            server.publish(channel, apiServer.getMessagePacket(data));
         },
         close(ws) {
             ws.unsubscribe(channel);
@@ -52,7 +58,8 @@ const server = Bun.serve<WebSocketData>({
 
 
 const masterServerConnection = new MasterServerConnection(channel, ( data) => {
-    server.publish(channel, data);
+    // server.publish(channel, data);
+    server.publish(channel, apiServer.getMessagePacket(data));
 });
 let prevClipboard = null;
 setInterval(() => {

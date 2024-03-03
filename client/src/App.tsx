@@ -1,5 +1,6 @@
-import {useEffect, useState} from 'react';
-import {ServerMessage, serverMessagesDecode} from "../../common/types.ts";
+import {useEffect, useMemo, useState} from 'react';
+import {ServerMessage} from "../../common/types.ts";
+import {ApiClient} from "../../common/api.ts";
 
 async function copyTextToClipboard(text: string) {
     try {
@@ -13,6 +14,19 @@ function App() {
     const [recentMessages, setRecentMessages] = useState<ServerMessage[]>([]);
     const [channelId, setChannelId] = useState<string>();
 
+    const client = useMemo<ApiClient>(() => {
+        return new ApiClient({
+            onChannel: (channel) => {
+                setChannelId(channel);
+            },
+            onMessage: (messages) => {
+                setRecentMessages(prev => {
+                    return [...prev, ...messages];
+                });
+            },
+        });
+    }, []);
+
 
     useEffect(() => {
         // Initialize WebSocket connection
@@ -24,19 +38,15 @@ function App() {
         });
         socket.addEventListener("message", event => {
             console.log("Message from server:", event.data);
-            const serverMessages = serverMessagesDecode(event.data);
-            if (serverMessages.length > 0) {
-                setChannelId(serverMessages[0].channelId);
-            }
-            setRecentMessages(prev => {
-                return [...prev, ...serverMessages];
-            });
+            client.onData(event.data);
         });
         socket.addEventListener("error", error => {
             console.error("WebSocket error:", error);
         });
         socket.addEventListener("close", () => {
             console.log("WebSocket connection closed");
+            setRecentMessages([]);
+            setChannelId(undefined);
         });
 
         // Clean up function to close the WebSocket connection when the component unmounts

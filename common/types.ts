@@ -3,7 +3,6 @@
 
 export type ServerMessage = {
     createdAt: number;
-    channelId: string;
     ipAddress?: string;
     message: string;
 }

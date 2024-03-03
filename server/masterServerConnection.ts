@@ -1,7 +1,7 @@
 import type {ServerMessage} from "../common/types.ts";
 import {serverMessageEncode, serverMessagesDecode} from "../common/types.ts";
 
-type DataCallback = (data: string) => void;
+type DataCallback = (data: ServerMessage[]) => void;
 
 export class MasterServerConnection {
     private socket: WebSocket | null = null;
@@ -26,7 +26,7 @@ export class MasterServerConnection {
                 // append messages to the initialMessages array
                 this.initialMessages = [...this.initialMessages, ...messages];
 
-                this.cb(serverMessageEncode(messages));
+                this.cb(messages);
             }
         });
         this.socket.addEventListener("error", error => {
@@ -52,7 +52,7 @@ export class MasterServerConnection {
         }
     }
 
-    getInitialData(): string {
-        return serverMessageEncode(this.initialMessages);
+    getInitialMessages(): ServerMessage[] {
+        return this.initialMessages;
     }
 }

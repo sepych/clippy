@@ -5,15 +5,11 @@ type WebSocketData = {
     createdAt: number;
     channelId: string;
     ipAddress: string;
-    // authToken: string;
 };
 
 const map = new Map<string, ServerMessage[]>();
 
 
-let channel = null;
-
-const WS_CHANNEL = "clippy";
 const PORT = process.env.PORT || 3001;
 const server = Bun.serve<WebSocketData>({
     fetch(req, server) {
@@ -25,12 +21,10 @@ const server = Bun.serve<WebSocketData>({
                 ipAddress,
             },
         });
-
-        return;
     },
     websocket: {
         message(ws, message: string) {
-            const channel = `${WS_CHANNEL}-${ws.data.channelId}`;
+            const channel = ws.data.channelId;
             const hasChannel = map.has(channel);
 
             const nextMessages = serverMessagesDecode(message).map((msg) => {
@@ -54,7 +48,7 @@ const server = Bun.serve<WebSocketData>({
         },
         open(ws) {
             console.log("new channel opened", ws.data);
-            channel = `${WS_CHANNEL}-${ws.data.channelId}`
+            const channel = ws.data.channelId;
             ws.subscribe(channel);
             const hasChannel = map.has(channel);
             if (hasChannel) {
@@ -62,8 +56,7 @@ const server = Bun.serve<WebSocketData>({
             }
         },
         close(ws) {
-            ws.unsubscribe(channel);
-            channel = null;
+            ws.unsubscribe(ws.data.channelId);
         },
     },
     port: PORT
