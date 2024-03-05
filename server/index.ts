@@ -75,7 +75,7 @@ const masterServerConnection = new MasterServerConnection(channel, ( data) => {
 let prevClipboard = null;
 setInterval(() => {
     const result = clipboard.readSync();
-    if (prevClipboard !== result) {
+    if (prevClipboard !== result && result !== "") {
         prevClipboard = result;
         masterServerConnection.sendMessage(encrypt(result, process.env.ENCRYPTION_KEY));
     }
