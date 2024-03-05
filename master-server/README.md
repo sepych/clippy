@@ -16,13 +16,13 @@ This project was created using `bun init` in bun v1.0.29. [Bun](https://bun.sh) 
 
 # Install as a service
 
-Change YOUR_USER to your user in the `master-server.service` file.
-Set correct path to the working directory in the `master-server.service` file.
+Change YOUR_USER to your user in the `clippy-master.service` file.
+Set correct path to the working directory in the `clippy-master.service` file.
 
 Then run:
 
 ```bash
-sudo cp master-server.service /etc/systemd/system/
-sudo systemctl enable master-server
-sudo systemctl start master-server
+sudo cp clippy-master.service /etc/systemd/system/
+sudo systemctl enable clippy-master
+sudo systemctl start clippy-master
 ```

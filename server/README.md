@@ -13,3 +13,29 @@ bun run index.ts
 ```
 
 This project was created using `bun init` in bun v1.0.29. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+
+# Install as a service
+
+Requires `xsel` to be installed.
+    
+```bash
+sudo apt install xsel
+```
+
+
+Build the project:
+
+```bash
+bun run build
+cp clippy /usr/local/bin/
+```
+
+Change YOUR_USER to your user in the `clippy.service` file.
+
+Then run:
+
+```bash
+sudo cp clippy.service /etc/systemd/system/
+sudo systemctl enable clippy
+sudo systemctl start clippy
+```

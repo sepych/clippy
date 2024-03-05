@@ -6,6 +6,7 @@ import {MasterServerConnection} from "./masterServerConnection.ts";
 import {ApiServer} from "../common/api.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
 import type {ServerMessage} from "../common/types.ts";
+import chalk from "chalk";
 
 const app = express();
 
@@ -14,7 +15,8 @@ app.use(express.static(path.join(__dirname, '../client/dist/')));
 // Start the server
 const spaPagePort = process.env.CLIENT_PORT;
 app.listen(spaPagePort, () => {
-    console.log(`App listening on port ${spaPagePort}`);
+    const url = `http://localhost:${spaPagePort}`;
+    console.log(`App is running at ${chalk.underline.blue(url)}`);
     console.log('Press Ctrl+C to quit.');
 });
 
