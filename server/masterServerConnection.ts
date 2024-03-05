@@ -16,9 +16,10 @@ export class MasterServerConnection {
     }
 
     init() {
-        const host = process.env.HOST || "localhost";
-        const port = process.env.PORT || 3001;
+        const host = process.env.SERVER_WS_HOST || "localhost";
+        const port = process.env.SERVER_WS_PORT || 3001;
 
+        console.log(`Master WebSocket connection to ws://${host}:${port}?channelId=${this.channelId}`)
         this.socket = new WebSocket(`ws://${host}:${port}?channelId=${this.channelId}`);
         this.socket.addEventListener("open", () => {
             console.log("Master WebSocket connection established");
