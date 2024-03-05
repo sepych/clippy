@@ -4,15 +4,17 @@ import clipboard from 'clipboardy';
 import {v4 as uuidv4} from 'uuid';
 import {MasterServerConnection} from "./masterServerConnection.ts";
 import {ApiServer} from "../common/api.ts";
+import {decrypt, encrypt} from "./crypto-util.ts";
+import type {ServerMessage} from "../common/types.ts";
 
 const app = express();
 
 app.use(express.static(path.join(__dirname, '../client/dist/')));
 
 // Start the server
-const PORT = process.env.PORT || 8081;
-app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
+const spaPagePort = process.env.CLIENT_PORT;
+app.listen(spaPagePort, () => {
+    console.log(`App listening on port ${spaPagePort}`);
     console.log('Press Ctrl+C to quit.');
 });
 
@@ -27,6 +29,15 @@ const channel = args[0] || uuidv4();
 
 
 const apiServer = new ApiServer();
+
+function decryptMessage(data: ServerMessage[]) {
+    return data.map((msg) => {
+        return {
+            ...msg,
+            message: decrypt(msg.message, process.env.ENCRYPTION_KEY),
+        };
+    });
+}
 
 const server = Bun.serve<WebSocketData>({
     async fetch(req, server) {
@@ -47,7 +58,7 @@ const server = Bun.serve<WebSocketData>({
 
             // const data = masterServerConnection.getInitialData();
             const data = masterServerConnection.getInitialMessages();
-            server.publish(channel, apiServer.getMessagePacket(data));
+            server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
         },
         close(ws) {
             ws.unsubscribe(channel);
@@ -59,13 +70,13 @@ const server = Bun.serve<WebSocketData>({
 
 const masterServerConnection = new MasterServerConnection(channel, ( data) => {
     // server.publish(channel, data);
-    server.publish(channel, apiServer.getMessagePacket(data));
+    server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
 });
 let prevClipboard = null;
 setInterval(() => {
     const result = clipboard.readSync();
     if (prevClipboard !== result) {
         prevClipboard = result;
-        masterServerConnection.sendMessage(result);
+        masterServerConnection.sendMessage(encrypt(result, process.env.ENCRYPTION_KEY));
     }
 }, 500);
