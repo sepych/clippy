@@ -1,6 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {RouterOutlet} from "@angular/router";
-import {initFlowbite} from "flowbite";
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,13 +7,12 @@ import {initFlowbite} from "flowbite";
     <router-outlet></router-outlet>
   `,
   imports: [
-    RouterOutlet
+    RouterOutlet,
   ],
-  standalone: true
+  standalone: true,
 })
 export class AppComponent implements OnInit {
-
   ngOnInit(): void {
-    initFlowbite();
+
   }
 }

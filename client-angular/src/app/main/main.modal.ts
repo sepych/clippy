@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
-import {MatButton} from "@angular/material/button";
+import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'main-modal',
@@ -19,8 +19,8 @@ import {MatButton} from "@angular/material/button";
     MatDialogContent,
     MatButton,
     MatDialogClose,
-    MatDialogTitle
+    MatDialogTitle,
   ],
-  standalone: true
+  standalone: true,
 })
 export class MainModal { }
