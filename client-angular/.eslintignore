@@ -1,3 +1,4 @@
 *.html
 out-tsc
 tailwind.config.js
+dist
