@@ -25,7 +25,7 @@ import { ServerMessage } from '../../../../common/types';
                     fill="currentColor"></path>
             </svg>
           </button>
-          <div class="max-w-[400px] overflow-auto">
+          <div class="w-4/6">
             <pre>{{ message.message }}</pre>
           </div>
         </div>

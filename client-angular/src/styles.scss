@@ -1,7 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@include mat.core();
+
+
+
+$app-light-primary: mat.define-palette(mat.$blue-palette);
+$app-light-accent: mat.define-palette(mat.$teal-palette, A200, A100, A400, 50);
+$app-light-warn: mat.define-palette(mat.$red-palette);
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $app-light-primary,
+    accent: $app-light-accent,
+    warn: $app-light-warn,
+  )
+));
+
+
+
+$app-dark-primary: mat.define-palette(mat.$light-blue-palette, 500, 100, 700, 500);
+$app-dark-accent: mat.define-palette(mat.$teal-palette, A200, A100, A400);
+$app-dark-warn: mat.define-palette(mat.$red-palette);
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $app-dark-primary,
+    accent: $app-dark-accent,
+    warn: $app-dark-warn,
+  ),
+));
+
+@include mat.all-component-themes($light-theme);
+
+.dark {
+  @include mat.all-component-colors($dark-theme);
+}
+
+/* You can add global styles to this file, and also import other style files */
+.dark {
+  color-scheme: dark;
+}
+
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.app-container {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
