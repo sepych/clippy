@@ -7,10 +7,11 @@ import {ApiServer} from "../common/api.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
 import type {ServerMessage} from "../common/types.ts";
 import chalk from "chalk";
+import type { ServerWebSocket } from "bun";
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, '../client/dist/')));
+app.use(express.static(path.join(__dirname, '../client-angular/dist/client-angular/browser')));
 
 // Start the server
 const spaPagePort = process.env.CLIENT_PORT;
@@ -36,7 +37,7 @@ function decryptMessage(data: ServerMessage[]) {
     return data.map((msg) => {
         return {
             ...msg,
-            message: decrypt(msg.message, process.env.ENCRYPTION_KEY),
+            message: decrypt(msg.message, process.env.ENCRYPTION_KEY as string),
         };
     });
 }
@@ -65,6 +66,9 @@ const server = Bun.serve<WebSocketData>({
         close(ws) {
             ws.unsubscribe(channel);
         },
+        message: function (ws: ServerWebSocket<WebSocketData>, message: string | Buffer): void | Promise<void> {
+            throw new Error("Function not implemented.");
+        }
     },
 });
 
@@ -74,11 +78,11 @@ const masterServerConnection = new MasterServerConnection(channel, ( data) => {
     // server.publish(channel, data);
     server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
 });
-let prevClipboard = null;
+let prevClipboard: string | null = null;
 setInterval(() => {
     const result = clipboard.readSync();
     if (prevClipboard !== result && result !== "") {
         prevClipboard = result;
-        masterServerConnection.sendMessage(encrypt(result, process.env.ENCRYPTION_KEY));
+        masterServerConnection.sendMessage(encrypt(result, process.env.ENCRYPTION_KEY as string));
     }
 }, 500);
