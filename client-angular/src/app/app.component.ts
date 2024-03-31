@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {ThemeService} from "./services/theme.service";
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <div class="app-container">
-      <router-outlet></router-outlet>
+      <div class="container mx-auto">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   `,
   imports: [
@@ -16,6 +18,7 @@ import {ThemeService} from "./services/theme.service";
 })
 export class AppComponent implements OnInit {
   constructor(private themeService: ThemeService) {}
+
   ngOnInit() {
     this.themeService.init();
   }
