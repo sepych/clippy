@@ -12,7 +12,7 @@ export type Packet = {
     payload: string;
 }
 
-function isPacket(data: unknown): data is Packet {
+export function isPacket(data: unknown): data is Packet {
     return (data as Packet).event !== undefined && (data as Packet).payload !== undefined;
 }
 

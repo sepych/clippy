@@ -9,13 +9,14 @@ import { ThemeService } from '../services/theme.service';
 import ColorLabelComponent from './color-label.component';
 import ColorWellComponent from './color-well.component';
 import { SettingsService } from '../services/settings.service';
+import { SettingsComponent } from './settings.component';
 
 @Component({
   selector: 'main-component',
   template: `
     @if (!settings.getSettings()) {
       <div class="flex justify-center items-center h-full">
-        Settings not found
+        <settings-component></settings-component>
       </div>
     } @else {
 
@@ -64,6 +65,7 @@ import { SettingsService } from '../services/settings.service';
     ColorLabelComponent,
     ColorWellComponent,
     MatProgressSpinner,
+    SettingsComponent,
   ],
   standalone: true,
 })
@@ -73,16 +75,12 @@ export class MainComponent {
     public session: SessionService,
     public settings: SettingsService,
     public theme: ThemeService,
-  ) {}
-
-  // openDialog() {
-  //   this.dialog.open(MainModal, {
-  //     width: '250px',
-  //   });
-  // }
+  ) {
+  }
 
   openSettings() {
-    // TODO: Implement settings dialog
-
+    this.dialog.open(MainModal, {
+      width: '250px',
+    });
   }
 }

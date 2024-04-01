@@ -3,7 +3,7 @@ import * as path from "node:path";
 import clipboard from 'clipboardy';
 import {v4 as uuidv4} from 'uuid';
 import {MasterServerConnection} from "./masterServerConnection.ts";
-import {ApiServer} from "../common/api.ts";
+import {ApiServer, isPacket} from "../common/api.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
 import type {ServerMessage} from "../common/types.ts";
 import chalk from "chalk";
@@ -71,15 +71,19 @@ const server = Bun.serve<WebSocketData>({
         message: function (ws: ServerWebSocket<WebSocketData>, message: string | Buffer): void | Promise<void> {
             try {
                 const data = JSON.parse(message.toString());
-                if (isSettings(data)) {
-                    masterServerConnection.setSettings(data);
-                    masterServerConnection.init(( data) => {
-                        server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
-                    });
-                    return;
-                } else {
-                    console.log("Settings not found in message");
+
+                console.log("Received message:", data);
+                if (isPacket(data)) {
+                    const settingsPacket = JSON.parse(data.payload);
+                    if (isSettings(settingsPacket)) {
+                        masterServerConnection.setSettings(settingsPacket);
+                        masterServerConnection.init((data) => {
+                            server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
+                        });
+                        return;
+                    }
                 }
+                console.log("Settings not found in message");
             } catch (e) {
                 console.error("Failed to parse settings:", e);
             }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
 import { isSettings, Settings } from '../../../../common/settings';
 
 @Injectable({
@@ -8,8 +7,10 @@ import { isSettings, Settings } from '../../../../common/settings';
 export class SettingsService {
   private settings: Settings | undefined;
 
+  static storageKey = 'clippy-settings';
+
   constructor() {
-    const savedSettings = localStorage.getItem('clippy-settings');
+    const savedSettings = localStorage.getItem(SettingsService.storageKey);
     if (savedSettings) {
       const data = JSON.parse(savedSettings);
       if (isSettings(data)) {
@@ -24,6 +25,6 @@ export class SettingsService {
 
   saveSettings(settings: Settings): void {
     this.settings = settings;
-    localStorage.setItem('settings', JSON.stringify(settings));
+    localStorage.setItem(SettingsService.storageKey, JSON.stringify(settings));
   }
 }
