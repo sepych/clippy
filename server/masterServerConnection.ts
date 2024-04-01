@@ -1,26 +1,24 @@
 import type {ServerMessage} from "../common/types.ts";
 import {serverMessageEncode, serverMessagesDecode} from "../common/types.ts";
+import type {Settings} from "../common/settings.ts";
 
 type DataCallback = (data: ServerMessage[]) => void;
 
 export class MasterServerConnection {
     private socket: WebSocket | null = null;
     private initialMessages: ServerMessage[] = [];
-    private readonly channelId: string;
-    private readonly cb: DataCallback;
+    private channelId: string | undefined;
+    private masterServerIp: string | undefined;
+    private masterServerPort: number | undefined;
 
-    constructor(channelId: string, cb: DataCallback) {
-        this.channelId = channelId;
-        this.cb = cb;
-        this.init();
-    }
 
-    init() {
-        const host = process.env.SERVER_WS_HOST || "localhost";
-        const port = process.env.SERVER_WS_PORT || 3001;
+    init(cb: DataCallback) {
+        if (!this.channelId || !this.masterServerIp || !this.masterServerPort) {
+            throw new Error("Channel ID, master server IP and master server port must be set before initializing the connection");
+        }
 
-        console.log(`Master WebSocket connection to ws://${host}:${port}?channelId=${this.channelId}`)
-        this.socket = new WebSocket(`ws://${host}:${port}?channelId=${this.channelId}`);
+        console.log(`Master WebSocket connection to ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`)
+        this.socket = new WebSocket(`ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`);
         this.socket.addEventListener("open", () => {
             console.log("Master WebSocket connection established");
         });
@@ -30,7 +28,7 @@ export class MasterServerConnection {
                 // append messages to the initialMessages array
                 this.initialMessages = [...this.initialMessages, ...messages];
 
-                this.cb(messages);
+                cb(messages);
             }
         });
         this.socket.addEventListener("error", error => {
@@ -40,7 +38,7 @@ export class MasterServerConnection {
             this.socket = null;
             this.initialMessages = [];
             setTimeout(() => {
-                this.init();
+                this.init(cb);
             }, 3000);
         });
     }
@@ -58,5 +56,11 @@ export class MasterServerConnection {
 
     getInitialMessages(): ServerMessage[] {
         return this.initialMessages;
+    }
+
+    setSettings(data: Settings) {
+        this.channelId = data.channel;
+        this.masterServerIp = data.masterServerIp;
+        this.masterServerPort = data.masterServerPort;
     }
 }

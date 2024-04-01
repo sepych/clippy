@@ -1,6 +1,7 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { ApiClient } from '../../../../common/api';
+import { ApiClient, ApiServer } from '../../../../common/api';
 import { ServerMessage } from '../../../../common/types';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,9 @@ export class SessionService {
 
   private recentMessages: WritableSignal<ServerMessage[]> = signal<ServerMessage[]>([]);
 
-  constructor() {
+  private socket: WebSocket | undefined;
+
+  constructor(private settingsService: SettingsService) {
     this.client = new ApiClient({
       onChannel: (channel) => {
         this.channelId.set(channel);
@@ -25,27 +28,42 @@ export class SessionService {
   }
 
   init() {
-    const socket = new WebSocket('ws://localhost:3000');
+    this.socket?.close();
+
+    const settings = this.settingsService.getSettings();
+    if (!settings) {
+      console.error('Settings not found');
+      return;
+    }
+
+    console.log('Settings:', settings);
+    this.socket = new WebSocket(`ws://${settings.serverIp}:${settings.serverPort}`);
 
     // Set up WebSocket event listeners
-    socket.addEventListener('open', () => {
+    this.socket.addEventListener('open', () => {
       console.log('WebSocket connection established');
+      const apiServer = new ApiServer();
+      this.socket?.send(apiServer.getSettingsPacket(settings));
     });
-    socket.addEventListener('message', (event) => {
+    this.socket.addEventListener('message', (event) => {
       console.log('Message from server:', event.data);
       this.client.onData(event.data);
     });
-    socket.addEventListener('error', (error) => {
+    this.socket.addEventListener('error', (error) => {
       console.error('WebSocket error:', error);
     });
-    socket.addEventListener('close', () => {
+    this.socket.addEventListener('close', () => {
       console.log('WebSocket connection closed');
       this.recentMessages.set([]);
       this.channelId.set(undefined);
-      setTimeout(() => {
-        this.init();
-      }, 1000);
+      // setTimeout(() => {
+      //   this.init();
+      // }, 1000);
     });
+  }
+
+  isConnectionOpen(): boolean {
+    return this.socket?.readyState === WebSocket.OPEN;
   }
 
   getChannelId(): string | undefined {

@@ -8,6 +8,7 @@ import {decrypt, encrypt} from "./crypto-util.ts";
 import type {ServerMessage} from "../common/types.ts";
 import chalk from "chalk";
 import type { ServerWebSocket } from "bun";
+import {isSettings} from "../common/settings.ts";
 
 const app = express();
 
@@ -28,7 +29,7 @@ type WebSocketData = {
 
 // get channel id from args
 const args = process.argv.slice(2);
-const channel = args[0] || uuidv4();
+const channel = 'clippy-chat-api'// args[0] || uuidv4();
 
 
 const apiServer = new ApiServer();
@@ -42,6 +43,7 @@ function decryptMessage(data: ServerMessage[]) {
     });
 }
 
+const masterServerConnection = new MasterServerConnection();
 const server = Bun.serve<WebSocketData>({
     async fetch(req, server) {
         server.upgrade(req, {
@@ -67,17 +69,29 @@ const server = Bun.serve<WebSocketData>({
             ws.unsubscribe(channel);
         },
         message: function (ws: ServerWebSocket<WebSocketData>, message: string | Buffer): void | Promise<void> {
-            throw new Error("Function not implemented.");
+            try {
+                const data = JSON.parse(message.toString());
+                if (isSettings(data)) {
+                    masterServerConnection.setSettings(data);
+                    masterServerConnection.init(( data) => {
+                        server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
+                    });
+                    return;
+                } else {
+                    console.log("Settings not found in message");
+                }
+            } catch (e) {
+                console.error("Failed to parse settings:", e);
+            }
+            ws.close();
         }
+
     },
 });
 
 
 
-const masterServerConnection = new MasterServerConnection(channel, ( data) => {
-    // server.publish(channel, data);
-    server.publish(channel, apiServer.getMessagePacket(decryptMessage(data)));
-});
+
 let prevClipboard: string | null = null;
 setInterval(() => {
     const result = clipboard.readSync();
