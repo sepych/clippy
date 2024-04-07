@@ -2,3 +2,5 @@
 out-tsc
 tailwind.config.js
 dist
+
+src/assets
