@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MainModal } from './main.modal';
+import { FormBuilder, Validators } from '@angular/forms';
+import { SettingsModal, SettingsDialogData } from './settings.modal';
 import { SessionService } from '../services/session.service';
 import { MessageComponent } from './message.component';
 import { ThemeService } from '../services/theme.service';
@@ -10,23 +11,24 @@ import ColorLabelComponent from './color-label.component';
 import ColorWellComponent from './color-well.component';
 import { SettingsService } from '../services/settings.service';
 import { SettingsComponent } from './settings.component';
+import { Settings } from '../../../../common/settings';
 
 @Component({
   selector: 'main-component',
   template: `
-    @if (!settings.getSettings()) {
+    @if (!settingsService.getSettings()) {
       <div class="flex justify-center items-center h-full">
-        <settings-component></settings-component>
+        <settings-component [onSettingsChange]="onSettingsChange" [form]="form"></settings-component>
+        <button mat-button type="submit" color="primary" [disabled]="!form.valid">Submit</button>
       </div>
     } @else {
-
       <div class="flex justify-between items-center mb-4">
-        @if (session.getChannelId()) {
-          <color-label color="yellow">{{ session.getChannelId() }}</color-label>
+        @if (sessionService.getChannelId()) {
+          <color-label color="yellow">{{ sessionService.getChannelId() }}</color-label>
         }
         <div>
-          @if (!theme.isDark()) {
-            <button mat-button (click)="theme.toggleTheme(true)">
+          @if (!themeService.isDark()) {
+            <button mat-button (click)="themeService.toggleTheme(true)">
               <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                    fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -34,7 +36,7 @@ import { SettingsComponent } from './settings.component';
               </svg>
             </button>
           } @else {
-            <button mat-button (click)="theme.toggleTheme(false)">
+            <button mat-button (click)="themeService.toggleTheme(false)">
               <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                    fill="currentColor" viewBox="0 0 18 20">
                 <path
@@ -53,13 +55,13 @@ import { SettingsComponent } from './settings.component';
       </div>
 
 
-      @for (message of session.getRecentMessages(); track message.createdAt) {
+      @for (message of sessionService.getRecentMessages(); track message.createdAt) {
         <message-component [message]="message"></message-component>
       }
     }
   `,
   imports: [
-    MainModal,
+    SettingsModal,
     MatButton,
     MessageComponent,
     ColorLabelComponent,
@@ -70,17 +72,44 @@ import { SettingsComponent } from './settings.component';
   standalone: true,
 })
 export class MainComponent {
+  protected form = this.formBuilder.group({
+    masterServerIp: ['', Validators.required],
+    masterServerPort: [3000, Validators.required],
+    serverIp: ['localhost', Validators.required],
+    serverPort: [3000, Validators.required],
+    channel: ['', Validators.required],
+    encryptionKey: ['', Validators.required],
+  });
+
   constructor(
     public dialog: MatDialog,
-    public session: SessionService,
-    public settings: SettingsService,
-    public theme: ThemeService,
+    public sessionService: SessionService,
+    public settingsService: SettingsService,
+    public themeService: ThemeService,
+    private formBuilder: FormBuilder,
   ) {
+    const settings = this.settingsService.getSettings();
+    if (settings) {
+      this.form.setValue(settings);
+    }
   }
 
   openSettings() {
-    this.dialog.open(MainModal, {
-      width: '250px',
+    const ref = this.dialog.open<SettingsModal, SettingsDialogData, Settings>(SettingsModal, {
+      data: {
+        form: this.form,
+      },
     });
+
+    ref.afterClosed().subscribe((result) => {
+      if (result) {
+        this.onSettingsChange(result);
+      }
+    });
+  }
+
+  onSettingsChange(settings: Settings) {
+    this.settingsService.saveSettings(settings);
+    this.sessionService.init();
   }
 }

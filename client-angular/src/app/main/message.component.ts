@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { MainModal } from './main.modal';
+import { SettingsModal } from './settings.modal';
 import { ServerMessage } from '../../../../common/types';
 import ColorLabelComponent from './color-label.component';
 import ColorWellComponent from './color-well.component';
@@ -35,7 +35,7 @@ import ColorWellComponent from './color-well.component';
     </div>
   `,
   imports: [
-    MainModal,
+    SettingsModal,
     MatButton,
     ColorLabelComponent,
     ColorWellComponent,

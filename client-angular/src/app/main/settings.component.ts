@@ -1,12 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import ColorLabelComponent from './color-label.component';
 import ColorWellComponent from './color-well.component';
 import { Settings } from '../../../../common/settings';
-import { SettingsService } from '../services/settings.service';
-import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'settings-component',
@@ -48,7 +46,6 @@ import { SessionService } from '../services/session.service';
           <input matInput formControlName="encryptionKey">
         </mat-form-field>
       </div>
-      <button mat-button type="submit" color="primary" [disabled]="!form.valid">Submit</button>
     </form>
   `,
   imports: [
@@ -63,33 +60,14 @@ import { SessionService } from '../services/session.service';
   standalone: true,
 })
 export class SettingsComponent {
-  protected form = this.formBuilder.group({
-    masterServerIp: ['', Validators.required],
-    masterServerPort: [3000, Validators.required],
-    serverIp: ['localhost', Validators.required],
-    serverPort: [3000, Validators.required],
-    channel: ['', Validators.required],
-    encryptionKey: ['', Validators.required],
-  });
+  @Input() onSettingsChange!: (settings: Settings) => void;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private settingsService: SettingsService,
-    private sessionService: SessionService,
-  ) {
-    const settings = this.settingsService.getSettings();
-    if (settings) {
-      this.form.setValue(settings);
-    }
-  }
+  @Input() form!: FormGroup;
 
   submit() {
     if (this.form.invalid) {
       return;
     }
-    console.log(this.form.value);
-
-    this.settingsService.saveSettings(this.form.value as Settings);
-    this.sessionService.init();
+    this.onSettingsChange(this.form.value as Settings);
   }
 }
