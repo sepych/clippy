@@ -1,5 +1,5 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { ApiClient, ApiServer } from '../../../../common/api';
+import { ApiClient } from '../../../../common/api';
 import { ServerMessage } from '../../../../common/types';
 import { SettingsService } from './settings.service';
 
@@ -42,8 +42,7 @@ export class SessionService {
     // Set up WebSocket event listeners
     this.socket.addEventListener('open', () => {
       console.log('WebSocket connection established');
-      const apiServer = new ApiServer();
-      this.socket?.send(apiServer.getSettingsPacket(settings));
+      this.client.setSettings(this.socket!, settings);
     });
     this.socket.addEventListener('message', (event) => {
       console.log('Message from server:', event.data);

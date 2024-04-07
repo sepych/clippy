@@ -1,14 +1,8 @@
-import {type ServerMessage, serverMessageEncode, serverMessagesDecode} from "./types";
+import {type ServerMessage, serverMessagesDecode} from "./types";
 import type {Settings} from "./settings";
 
-export enum Event {
-    CHANNEL = "CHANNEL",
-    MESSAGE = "MESSAGE",
-    SETTINGS = "SETTINGS",
-}
-
 export type Packet = {
-    event: Event;
+    event: ApiClientEvent | ApiServerEvent;
     payload: string;
 }
 
@@ -16,18 +10,21 @@ export function isPacket(data: unknown): data is Packet {
     return (data as Packet).event !== undefined && (data as Packet).payload !== undefined;
 }
 
+export enum ApiServerEvent {
+    SETTINGS = "SETTINGS",
+}
+export enum ApiClientEvent {
+    CHANNEL = "CHANNEL",
+    MESSAGE = "MESSAGE",
+}
 
-
-type Callback = {
+type ApiClientCallback = {
     onChannel: (channel: string) => void;
     onMessage: (message: ServerMessage[]) => void;
 }
 
 export class ApiClient {
-    private callbacks: Callback;
-
-    constructor(callbacks: Callback) {
-        this.callbacks = callbacks;
+    constructor(private callbacks: ApiClientCallback) {
     }
 
     public onData = (data: unknown) => {
@@ -35,10 +32,10 @@ export class ApiClient {
             data = JSON.parse(data as string);
             if (isPacket(data)) {
                 switch (data.event) {
-                    case Event.CHANNEL:
+                    case ApiClientEvent.CHANNEL:
                         this.callbacks.onChannel(data.payload);
                         break;
-                    case Event.MESSAGE:
+                    case ApiClientEvent.MESSAGE:
                         this.callbacks.onMessage(serverMessagesDecode(data.payload));
                         break;
                 }
@@ -47,30 +44,14 @@ export class ApiClient {
             console.error("Failed to parse data:", e);
         }
     }
-}
 
-export class ApiServer {
-    getMessagePacket = (message: ServerMessage[]) => {
+    setSettings(socket: WebSocket, settings: Settings) {
         const packet: Packet = {
-            event: Event.MESSAGE,
-            payload: serverMessageEncode(message),
-        }
-        return JSON.stringify(packet);
-    }
-
-    getChannelPacket(channel: string) {
-        const packet: Packet = {
-            event: Event.CHANNEL,
-            payload: channel,
-        }
-        return JSON.stringify(packet);
-    }
-
-    getSettingsPacket(settings: Settings) {
-        const packet: Packet = {
-            event: Event.SETTINGS,
+            event: ApiServerEvent.SETTINGS,
             payload: JSON.stringify(settings),
         }
-        return JSON.stringify(packet);
+        const packetStr = JSON.stringify(packet);
+        socket.send(packetStr);
     }
 }
+

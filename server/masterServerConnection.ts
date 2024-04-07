@@ -16,6 +16,10 @@ export class MasterServerConnection {
         if (!this.channelId || !this.masterServerIp || !this.masterServerPort) {
             throw new Error("Channel ID, master server IP and master server port must be set before initializing the connection");
         }
+        if (this.socket) {
+            this.socket.close();
+        }
+
 
         console.log(`Master WebSocket connection to ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`)
         this.socket = new WebSocket(`ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`);
@@ -27,7 +31,7 @@ export class MasterServerConnection {
                 const messages = serverMessagesDecode(event.data);
                 // append messages to the initialMessages array
                 this.initialMessages = [...this.initialMessages, ...messages];
-
+                console.log("Message from server:", messages);
                 cb(messages);
             }
         });
@@ -37,9 +41,9 @@ export class MasterServerConnection {
         this.socket.addEventListener("close", () => {
             this.socket = null;
             this.initialMessages = [];
-            setTimeout(() => {
-                this.init(cb);
-            }, 3000);
+            // setTimeout(() => {
+            //     this.init(cb);
+            // }, 3000);
         });
     }
 
