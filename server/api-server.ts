@@ -4,7 +4,7 @@ import {ApiClientEvent, ApiServerEvent, isPacket, type Packet} from "../common/a
 import type {Server, ServerWebSocket} from "bun";
 import {MasterServerConnection} from "./masterServerConnection.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
-import clipboard from "clipboardy";
+const addon = require("./build/Release/addon.node");
 
 
 
@@ -44,7 +44,7 @@ export class ApiServer {
             if (!this.currentConnection || !this.currentConnection.data.settings) {
                 return;
             }
-            const result = clipboard.readSync();
+            const result = addon.clipboardText();
             if (this.prevClipboard !== result && result !== "") {
                 this.prevClipboard = result;
                 console.log("Sending clipboard data:", result);

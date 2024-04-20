@@ -16,17 +16,18 @@ This project was created using `bun init` in bun v1.0.29. [Bun](https://bun.sh) 
 
 # Install as a service
 
-Requires `xsel` to be installed.
-    
-```bash
-sudo apt install xsel
-```
+Install dependencies:
 
+```bash
+npm install -g node-gyp
+sudo apt-get install build-essential
+sudo apt-get install libx11-dev
+```
 
 Build the project:
 
 ```bash
-bun run build
+bun run single-exe
 cp clippy /usr/local/bin/
 ```
 

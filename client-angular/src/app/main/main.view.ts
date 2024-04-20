@@ -21,8 +21,9 @@ import SvgSun from '../../assets/sun';
   template: `
     @if (!settingsService.getSettings()) {
       <div class="flex justify-center items-center h-full">
-        <settings-component [onSettingsChange]="onSettingsChange" [form]="form"></settings-component>
-        <button mat-button type="submit" color="primary" [disabled]="!form.valid">Submit</button>
+        <button mat-raised-button (click)="openSettings()">
+          Start
+        </button>
       </div>
     } @else {
       <div class="flex justify-between items-center mb-4">
