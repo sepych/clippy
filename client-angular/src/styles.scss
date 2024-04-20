@@ -42,13 +42,11 @@ $dark-theme: mat.define-dark-theme((
   color-scheme: dark;
 }
 
-html, body {
-  height: 100%;
+body.dark {
+  @apply bg-gray-800;
 }
-
 body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  @apply bg-gray-50;
 }
 
 :root {
