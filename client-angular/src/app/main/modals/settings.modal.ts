@@ -9,8 +9,8 @@ import {
 } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { FormGroup } from '@angular/forms';
-import { SettingsComponent } from './settings.component';
-import { Settings } from '../../../../common/settings';
+import { SettingsComponent } from '../components/settings.component';
+import { Settings } from '../../../../../common/settings';
 
 export interface SettingsDialogData {
   form: FormGroup;

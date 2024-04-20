@@ -3,21 +3,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { FormBuilder, Validators } from '@angular/forms';
-import { SettingsModal, SettingsDialogData } from './settings.modal';
+import { SettingsModal, SettingsDialogData } from './modals/settings.modal';
 import { SessionService } from '../services/session.service';
-import { MessageComponent } from './message.component';
+import { MessageComponent } from './components/message.component';
 import { ThemeService } from '../services/theme.service';
-import ColorLabelComponent from './color-label.component';
-import ColorWellComponent from './color-well.component';
+import ColorLabelComponent from '../components/color-label.component';
+import ColorWellComponent from '../components/color-well.component';
 import { SettingsService } from '../services/settings.service';
-import { SettingsComponent } from './settings.component';
+import { SettingsComponent } from './components/settings.component';
 import { Settings } from '../../../../common/settings';
 import SvgSettings from '../../assets/settings';
 import SvgMoon from '../../assets/moon';
 import SvgSun from '../../assets/sun';
 
 @Component({
-  selector: 'main-component',
+  selector: 'main-view',
   template: `
     @if (!settingsService.getSettings()) {
       <div class="flex justify-center items-center h-full">
@@ -66,7 +66,7 @@ import SvgSun from '../../assets/sun';
   ],
   standalone: true,
 })
-export class MainComponent {
+export class MainView {
   protected form = this.formBuilder.group({
     masterServerIp: ['', Validators.required],
     masterServerPort: [3000, Validators.required],

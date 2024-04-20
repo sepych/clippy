@@ -2,9 +2,9 @@ import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import ColorLabelComponent from './color-label.component';
-import ColorWellComponent from './color-well.component';
-import { Settings } from '../../../../common/settings';
+import ColorLabelComponent from '../../components/color-label.component';
+import ColorWellComponent from '../../components/color-well.component';
+import { Settings } from '../../../../../common/settings';
 
 @Component({
   selector: 'settings-component',

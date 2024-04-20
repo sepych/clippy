@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SettingsModal } from './settings.modal';
-import { ServerMessage } from '../../../../common/types';
-import ColorLabelComponent from './color-label.component';
-import ColorWellComponent from './color-well.component';
-import SvgClipboard from '../../assets/clipboard';
+import { SettingsModal } from '../modals/settings.modal';
+import { ServerMessage } from '../../../../../common/types';
+import ColorLabelComponent from '../../components/color-label.component';
+import ColorWellComponent from '../../components/color-well.component';
+import SvgClipboard from '../../../assets/clipboard';
 
 @Component({
   selector: 'message-component',
