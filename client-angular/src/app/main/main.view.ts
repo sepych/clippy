@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { FormBuilder, Validators } from '@angular/forms';
-import { SettingsModal, SettingsDialogData } from './modals/settings.modal';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { SettingsDialogData, SettingsModal } from './modals/settings.modal';
 import { SessionService } from '../services/session.service';
 import { MessageComponent } from './components/message.component';
 import { ThemeService } from '../services/theme.service';
@@ -15,6 +15,7 @@ import { Settings } from '../../../../common/settings';
 import SvgSettings from '../../assets/settings';
 import SvgMoon from '../../assets/moon';
 import SvgSun from '../../assets/sun';
+import { FormGeneric } from '../utils/types';
 
 @Component({
   selector: 'main-view',
@@ -68,13 +69,35 @@ import SvgSun from '../../assets/sun';
   standalone: true,
 })
 export class MainView {
-  protected form = this.formBuilder.group({
-    masterServerIp: ['', Validators.required],
-    masterServerPort: [3000, Validators.required],
-    serverIp: ['localhost', Validators.required],
-    serverPort: [3000, Validators.required],
-    channel: ['', Validators.required],
-    encryptionKey: ['', Validators.required],
+  protected form = new FormGroup<FormGeneric<Settings>>({
+    masterServerIp: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    masterServerPort: new FormControl<number>(3001, {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    serverIp: new FormControl('localhost', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    serverPort: new FormControl<number>(3000, {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    channel: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    encryptionKey: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(32)],
+    }),
+    excludePasswords: new FormControl<boolean>(true, {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
   constructor(

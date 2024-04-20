@@ -5,6 +5,7 @@ export interface Settings {
     serverPort: number;
     channel: string;
     encryptionKey: string;
+    excludePasswords: boolean;
 }
 
 export function isSettings(data: unknown): data is Settings {
@@ -15,5 +16,6 @@ export function isSettings(data: unknown): data is Settings {
     valid &&= (data as Settings).serverIp !== undefined;
     valid &&= (data as Settings).serverPort !== undefined;
     valid &&= (data as Settings).channel !== undefined;
+    valid &&= (data as Settings).excludePasswords !== undefined;
     return valid;
 }

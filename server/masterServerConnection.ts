@@ -54,7 +54,9 @@ export class MasterServerConnection {
                 channelId: this.channelId,
                 message: message
             }
-            this.socket.send(serverMessageEncode([serverMessage]));
+            if (this.socket.readyState === WebSocket.OPEN) {
+                this.socket.send(serverMessageEncode([serverMessage]));
+            }
         }
     }
 

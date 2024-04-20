@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatIcon } from '@angular/material/icon';
 import ColorLabelComponent from '../../components/color-label.component';
 import ColorWellComponent from '../../components/color-well.component';
 import { Settings } from '../../../../../common/settings';
@@ -44,7 +46,13 @@ import { Settings } from '../../../../../common/settings';
         <mat-form-field class="w-full">
           <mat-label>Encryption Key</mat-label>
           <input matInput formControlName="encryptionKey">
+          <button type="button" matSuffix mat-icon-button (click)="generateKey()">
+            <mat-icon>refresh</mat-icon>
+          </button>
         </mat-form-field>
+      </div>
+      <div>
+        <mat-checkbox formControlName="excludePasswords">Don't log passwords</mat-checkbox>
       </div>
     </form>
   `,
@@ -54,8 +62,12 @@ import { Settings } from '../../../../../common/settings';
     ColorWellComponent,
     ReactiveFormsModule,
     MatInput,
+    MatSuffix,
     MatLabel,
     MatFormField,
+    MatCheckbox,
+    MatIconButton,
+    MatIcon,
   ],
   standalone: true,
 })
@@ -69,5 +81,16 @@ export class SettingsComponent {
       return;
     }
     this.onSettingsChange(this.form.value as Settings);
+  }
+
+  generateKey() {
+    const length = 32;
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    this.form.get('encryptionKey')?.setValue(result);
   }
 }

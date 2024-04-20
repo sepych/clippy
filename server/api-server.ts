@@ -44,7 +44,7 @@ export class ApiServer {
             if (!this.currentConnection || !this.currentConnection.data.settings) {
                 return;
             }
-            const result = addon.clipboardText();
+            const result = this.getClipboardData();
             if (this.prevClipboard !== result && result !== "") {
                 this.prevClipboard = result;
                 console.log("Sending clipboard data:", result);
@@ -124,5 +124,36 @@ export class ApiServer {
                 message: decrypt(msg.message, key),
             };
         });
+    }
+
+    private getClipboardData = () => {
+        const settings = this.currentConnection?.data.settings;
+        if (!settings) {
+            return;
+        }
+
+        const result = addon.clipboardText();
+        if (settings.excludePasswords && this.isPasswordString(result)) {
+            return '[password detected]';
+        }
+        return result;
+    }
+
+    private isPasswordString(result: string) {
+        const hasSpace = /\s/.test(result);
+        if (hasSpace) {
+            // consider that password is single word
+            return false;
+        }
+
+        if (result.length < 8 || result.length > 40) {
+            return false;
+        }
+
+        // has at least 8 and max 40 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+        const hasUpperCase = /[A-Z]/.test(result);
+        const hasLowerCase = /[a-z]/.test(result);
+        const hasNumber = /[0-9]/.test(result);
+        return hasUpperCase && hasLowerCase && hasNumber;
     }
 }

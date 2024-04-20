@@ -12,13 +12,19 @@ export function encrypt(text: string, secret: string) {
 }
 
 export function decrypt(text: string, secret: string) {
-    let textParts = text.split(':');
-    let iv = Buffer.from(textParts.shift() as string, 'hex');
-    let encryptedText = Buffer.from(textParts.join(':'), 'hex');
-    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(secret), iv);
-    let decrypted = decipher.update(encryptedText);
+    try {
+        let textParts = text.split(':');
+        let iv = Buffer.from(textParts.shift() as string, 'hex');
+        let encryptedText = Buffer.from(textParts.join(':'), 'hex');
+        let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(secret), iv);
+        let decrypted = decipher.update(encryptedText);
 
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
 
-    return decrypted.toString();
+        return decrypted.toString();
+    } catch (error) {
+        console.log(error)
+        return "Unable to decrypt message";
+    }
+
 }
