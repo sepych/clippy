@@ -1,10 +1,10 @@
-import {isSettings, type Settings} from "../common/settings.ts";
-import {type ServerMessage, serverMessageEncode} from "../common/types.ts";
-import {ApiClientEvent, ApiServerEvent, isPacket, type Packet} from "../common/api.ts";
+import {isSettings, type Settings} from "../../common/settings.ts";
+import {type ServerMessage, serverMessageEncode} from "../../common/types.ts";
+import {ApiClientEvent, ApiServerEvent, isPacket, type Packet} from "../../common/api.ts";
 import type {Server, ServerWebSocket} from "bun";
-import {MasterServerConnection} from "./masterServerConnection.ts";
+import {MasterServerConnection} from "./master-server-connection.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
-const addon = require("./build/Release/addon.node");
+const addon = require("../build/Release/addon.node");
 
 
 
@@ -47,7 +47,6 @@ export class ApiServer {
             const result = this.getClipboardData();
             if (this.prevClipboard !== result && result !== "") {
                 this.prevClipboard = result;
-                console.log("Sending clipboard data:", result);
                 this.masterServerConnection.sendMessage(encrypt(result,
                     this.currentConnection.data.settings.encryptionKey));
             }
@@ -95,7 +94,6 @@ export class ApiServer {
 
         this.masterServerConnection.setSettings(settings);
         this.masterServerConnection.init((data) => {
-            console.log("Received packets:", data.length);
             this.server.publish(settings.channel, this.getMessagePacket(
                 this.decryptMessage(data, settings.encryptionKey)));
         });

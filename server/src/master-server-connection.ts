@@ -1,6 +1,6 @@
-import type {ServerMessage} from "../common/types.ts";
-import {serverMessageEncode, serverMessagesDecode} from "../common/types.ts";
-import type {Settings} from "../common/settings.ts";
+import type {ServerMessage} from "../../common/types.ts";
+import {serverMessageEncode, serverMessagesDecode} from "../../common/types.ts";
+import type {Settings} from "../../common/settings.ts";
 
 type DataCallback = (data: ServerMessage[]) => void;
 
@@ -21,7 +21,7 @@ export class MasterServerConnection {
         }
 
 
-        console.log(`Master WebSocket connection to ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`)
+        // console.log(`Master WebSocket connection to ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`)
         this.socket = new WebSocket(`ws://${this.masterServerIp}:${this.masterServerPort}?channelId=${this.channelId}`);
         this.socket.addEventListener("open", () => {
             console.log("Master WebSocket connection established");
@@ -31,7 +31,7 @@ export class MasterServerConnection {
                 const messages = serverMessagesDecode(event.data);
                 // append messages to the initialMessages array
                 this.initialMessages = [...this.initialMessages, ...messages];
-                console.log("Message from server:", messages);
+                // console.log("Message from server:", messages);
                 cb(messages);
             }
         });

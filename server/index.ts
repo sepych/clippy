@@ -1,7 +1,7 @@
 import express from "express";
 import * as path from "node:path";
 import chalk from "chalk";
-import {ApiServer} from "./api-server.ts";
+import {ApiServer} from "./src/api-server.ts";
 
 const app = express();
 
