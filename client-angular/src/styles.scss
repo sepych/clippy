@@ -20,7 +20,6 @@ $light-theme: mat.define-light-theme((
 ));
 
 
-
 $app-dark-primary: mat.define-palette(mat.$light-blue-palette, 500, 100, 700, 500);
 $app-dark-accent: mat.define-palette(mat.$teal-palette, A200, A100, A400);
 $app-dark-warn: mat.define-palette(mat.$red-palette);
@@ -38,14 +37,23 @@ $dark-theme: mat.define-dark-theme((
   @include mat.all-component-colors($dark-theme);
 }
 
-/* You can add global styles to this file, and also import other style files */
+
 .dark {
   color-scheme: dark;
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+}
+
 body {
-  margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+:root {
+  --my-bg-dark: theme('colors.gray.800');
+  --my-bg-light: theme('colors.gray.50');
 }
 
 .app-container {
@@ -56,3 +64,20 @@ body {
 button {
   --mdc-text-button-container-shape: 9999px;
 }
+
+.dark mat-dialog-container {
+  --mdc-dialog-container-color: var(--my-bg-dark);
+}
+
+mat-dialog-container {
+  --mdc-dialog-container-color: var(--my-bg-light);
+}
+
+.dark .mdc-text-field {
+  --mdc-filled-text-field-container-color: var(--my-bg-dark);
+}
+
+.mdc-text-field {
+  --mdc-filled-text-field-container-color: var(--my-bg-light);
+}
+

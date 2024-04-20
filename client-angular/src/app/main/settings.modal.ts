@@ -24,9 +24,9 @@ export interface SettingsDialogData {
       <settings-component [onSettingsChange]="onSettingsChange.bind(this)" [form]="form">
       </settings-component>
     </mat-dialog-content>
-    <mat-dialog-actions>
+    <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-button [disabled]="!form.valid" (click)="onSettingsChange(form.value)">Save</button>
+      <button mat-button color="primary" [disabled]="!form.valid" (click)="onSettingsChange(form.value)">Save</button>
     </mat-dialog-actions>
   `,
   imports: [

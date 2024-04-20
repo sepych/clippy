@@ -91,6 +91,7 @@ export class MainComponent {
 
   openSettings() {
     const ref = this.dialog.open<SettingsModal, SettingsDialogData, Settings>(SettingsModal, {
+      minWidth: '40%',
       data: {
         form: this.form,
       },

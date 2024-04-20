@@ -11,37 +11,37 @@ import { Settings } from '../../../../common/settings';
   template: `
     <form [formGroup]="form" (submit)="submit()">
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Master Server IP</mat-label>
           <input matInput formControlName="masterServerIp">
         </mat-form-field>
       </div>
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Master Server Port</mat-label>
           <input matInput formControlName="masterServerPort">
         </mat-form-field>
       </div>
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Server IP</mat-label>
           <input matInput formControlName="serverIp">
         </mat-form-field>
       </div>
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Server Port</mat-label>
           <input matInput formControlName="serverPort">
         </mat-form-field>
       </div>
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Channel</mat-label>
           <input matInput formControlName="channel">
         </mat-form-field>
       </div>
       <div>
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Encryption Key</mat-label>
           <input matInput formControlName="encryptionKey">
         </mat-form-field>
