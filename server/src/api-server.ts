@@ -6,8 +6,8 @@ import {MasterServerConnection} from "./master-server-connection.ts";
 import {decrypt, encrypt} from "./crypto-util.ts";
 const addon = require("../build/Release/addon.node");
 
-
-
+// check inner array for duplicates, duplicates are not sent to the master server
+const MAX_CLIPBOARD_DUPLICATE_CHECK_COUNT = 100;
 
 type WebSocketData = {
     createdAt: number;
@@ -17,7 +17,7 @@ type WebSocketData = {
 export class ApiServer {
     private server: Server;
     private masterServerConnection: MasterServerConnection;
-    private prevClipboard?: string;
+    private prevClipboard: string[] = [];
 
     private currentConnection?: ServerWebSocket<WebSocketData>;
 
@@ -45,10 +45,13 @@ export class ApiServer {
                 return;
             }
             const result = this.getClipboardData();
-            if (this.prevClipboard !== result && result !== "") {
-                this.prevClipboard = result;
-                this.masterServerConnection.sendMessage(encrypt(result,
-                    this.currentConnection.data.settings.encryptionKey));
+            if (result !== "" && !this.containsClipboardData(result)) {
+                // do not send first clipboard data after connection
+                if (this.prevClipboard.length > 0) {
+                    this.masterServerConnection.sendMessage(encrypt(result,
+                        this.currentConnection.data.settings.encryptionKey));
+                }
+                this.addClipboardData(result);
             }
         }, 500);
     }
@@ -89,6 +92,8 @@ export class ApiServer {
     private onSettingsPacket = (settings: Settings, ws: ServerWebSocket<WebSocketData>) => {
         ws.data.settings = settings;
         ws.subscribe(settings.channel);
+        this.prevClipboard = [];
+
         // FIXME: this is not needed as client knows the channel
         this.server.publish(settings.channel, this.getChannelPacket(settings.channel));
 
@@ -124,10 +129,10 @@ export class ApiServer {
         });
     }
 
-    private getClipboardData = () => {
+    private getClipboardData(): string {
         const settings = this.currentConnection?.data.settings;
         if (!settings) {
-            return;
+            return '';
         }
 
         const result = addon.clipboardText();
@@ -153,5 +158,16 @@ export class ApiServer {
         const hasLowerCase = /[a-z]/.test(result);
         const hasNumber = /[0-9]/.test(result);
         return hasUpperCase && hasLowerCase && hasNumber;
+    }
+
+    private containsClipboardData(result: string) {
+        return this.prevClipboard.includes(result);
+    }
+
+    private addClipboardData(result: string) {
+        this.prevClipboard.push(result);
+        if (this.prevClipboard.length > MAX_CLIPBOARD_DUPLICATE_CHECK_COUNT) {
+            this.prevClipboard.shift();
+        }
     }
 }

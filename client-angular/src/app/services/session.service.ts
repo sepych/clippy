@@ -21,7 +21,8 @@ export class SessionService {
         this.channelId.set(channel);
       },
       onMessage: (messages) => {
-        this.recentMessages.set([...this.recentMessages(), ...messages]);
+        const messagesReversed = [...messages].reverse();
+        this.recentMessages.set([...messagesReversed, ...this.recentMessages()]);
       },
     });
     this.init();
@@ -45,7 +46,7 @@ export class SessionService {
       this.client.setSettings(this.socket!, settings);
     });
     this.socket.addEventListener('message', (event) => {
-      console.log('Message from server:', event.data);
+      // console.log('Message from server:', event.data);
       this.client.onData(event.data);
     });
     this.socket.addEventListener('error', (error) => {
