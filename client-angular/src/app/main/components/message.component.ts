@@ -19,18 +19,13 @@ import SvgHeartFilled from '../../../assets/heart-filled';
         </div>
 
       </div>
-      <div class="overflow-x-auto">
-
+      <div
+        class="overflow-x-auto rounded px-2.5 py-2.5 text-xs dark:bg-gray-900 bg-gray-200 dark:text-gray-100 text-gray-900">
         @if (message.message) {
-          <color-well color="gray" size="xs">
-            <div class="whitespace-pre">{{ message.message }}</div>
-          </color-well>
+          <div class="whitespace-pre w-full">{{ message.message }}</div>
         } @else {
-          <color-well color="red" size="xs">
-            <div class="whitespace-pre">Wrong encryption key</div>
-          </color-well>
+          <div class="dark:text-red-300 text-red-800">Wrong encryption key</div>
         }
-
       </div>
 
       <div class="ml-2 flex-row">
