@@ -122,9 +122,10 @@ export class ApiServer {
 
     private decryptMessage(data: ServerMessage[], key: string) {
         return data.map((msg) => {
+            const decrypted = decrypt(msg.message!, key);
             return {
                 ...msg,
-                message: decrypt(msg.message, key),
+                message: decrypted,
             };
         });
     }

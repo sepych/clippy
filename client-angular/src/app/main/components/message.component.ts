@@ -6,29 +6,50 @@ import { ServerMessage } from '../../../../../common/types';
 import ColorLabelComponent from '../../components/color-label.component';
 import ColorWellComponent from '../../components/color-well.component';
 import SvgClipboard from '../../../assets/clipboard';
+import SvgHeart from '../../../assets/heart';
+import SvgHeartFilled from '../../../assets/heart-filled';
 
 @Component({
   selector: 'message-component',
   template: `
     <div class="flex flex-row mb-2">
-      <div class="basis-1/5">
-        <div class="flex flex-row space-between pe-1">
-          <color-label color="indigo" class="grow">
-            {{ message.ipAddress }}
-          </color-label>
-          <button mat-button (click)="copyTextToClipboard(message.message)">
-            <svg-clipboard></svg-clipboard>
-          </button>
+      <div class="">
+        <div class="flex flex-row space-between pe-4">
+          <span class="text-amber-700 dark:text-amber-300 text-xs">{{ message.ipAddress }}</span>
         </div>
 
       </div>
-      <div class="basis-4/5 overflow-x-auto">
+      <div class="overflow-x-auto">
 
-        <color-well color="gray" size="xs">
-          <div class="whitespace-pre">{{ message.message }}</div>
-        </color-well>
+        @if (message.message) {
+          <color-well color="gray" size="xs">
+            <div class="whitespace-pre">{{ message.message }}</div>
+          </color-well>
+        } @else {
+          <color-well color="red" size="xs">
+            <div class="whitespace-pre">Wrong encryption key</div>
+          </color-well>
+        }
 
       </div>
+
+      <div class="ml-2 flex-row">
+        @if (message.message) {
+          <button mat-button color="primary" (click)="copyTextToClipboard(message.message)" class="!min-w-[36px]">
+            <svg-clipboard></svg-clipboard>
+          </button>
+          <button mat-button color="primary" (click)="toggleFavorite(message.message)" class="!min-w-[36px]">
+            @if (this.favorite) {
+              <svg-heart-filled></svg-heart-filled>
+            } @else {
+              <svg-heart></svg-heart>
+            }
+          </button>
+        }
+      </div>
+      <div class="flex-grow">
+      </div>
+
     </div>
   `,
   imports: [
@@ -37,11 +58,15 @@ import SvgClipboard from '../../../assets/clipboard';
     ColorLabelComponent,
     ColorWellComponent,
     SvgClipboard,
+    SvgHeart,
+    SvgHeartFilled,
   ],
   standalone: true,
 })
 export class MessageComponent {
   @Input() message!: ServerMessage;
+
+  protected favorite: boolean = false;
 
   constructor(
     private snackbar: MatSnackBar,
@@ -59,5 +84,10 @@ export class MessageComponent {
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
+  }
+
+  toggleFavorite(message: string) {
+    // TODO: Implement favorite functionality
+    this.favorite = !this.favorite;
   }
 }

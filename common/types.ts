@@ -4,7 +4,7 @@
 export type ServerMessage = {
     createdAt: number;
     ipAddress?: string;
-    message: string;
+    message: string | null;
 }
 
 export const serverMessagesDecode = (data: string): ServerMessage[] => {

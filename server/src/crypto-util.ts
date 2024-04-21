@@ -24,7 +24,7 @@ export function decrypt(text: string, secret: string) {
         return decrypted.toString();
     } catch (error) {
         console.log(error)
-        return "Unable to decrypt message";
+        return null;
     }
 
 }

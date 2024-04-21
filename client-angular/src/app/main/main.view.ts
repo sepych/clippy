@@ -29,7 +29,9 @@ import { FormGeneric } from '../utils/types';
     } @else {
       <div class="flex justify-between items-center mb-4">
         @if (sessionService.getChannelId()) {
-          <color-label color="yellow">{{ sessionService.getChannelId() }}</color-label>
+          <div>
+            <color-label color="yellow"><span class="lowercase text-xs">Channel #</span>{{ sessionService.getChannelId() }}</color-label>
+          </div>
         }
         <div>
           @if (!themeService.isDark()) {
